@@ -2,7 +2,7 @@
 
 //Constantes/variables del sistema-------------------------------------------------------
 #define BUFSIZE 8
-#define NUM_COLAS = 6
+#define NUM_COLAS 6
 #define CRM 0
 #define NUBE 1
 #define Maq1 2
