@@ -2,15 +2,20 @@
 
 //Constantes/variables del sistema-------------------------------------------------------
 #define BUFSIZE 8
-#define NUM_COLAS = 6;
+#define NUM_COLAS = 6
 #define CRM 0
 #define NUBE 1
+#define Maq1 2
+#define Maq2 3
+#define Maq3 4
+#define Maq4 5
 
 //Estructura de Mensaje--------------------------------------------------------
 typedef struct{
     int valor;
     int maquina;
     int senal;
+    int noProducto;
 } Smensaje;
 
 
