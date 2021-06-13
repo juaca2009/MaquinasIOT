@@ -114,6 +114,9 @@ static void *Environment ( void *arg )
 			        OutMsg.senal = enterCoin;
 			        OutMsg.valor = val;
 			        
+			        //enviarMensaje ( &(queue [prod]), OutMsg ); 
+			        //enviarMensaje ( &(queue [val]), OutMsg ); 
+			        
 			        
 			    case 2:
 			    	break;
@@ -158,6 +161,8 @@ static void *Environment ( void *arg )
 			        OutMsg.senal = addProduct;
 			        OutMsg.valor = 0;
 			        
+			        //enviarMensaje ( &(queue [prodAñadir]), OutMsg ); 
+			        
 			        
 			        
 			    case 2:
@@ -173,7 +178,8 @@ static void *Environment ( void *arg )
 			        OutMsg.noProducto = prodSuplir;
 			        OutMsg.senal = supplyProduct;
 			        OutMsg.valor = 0;
-		    	
+		    		
+		    		//enviarMensaje ( &(queue [prodSuplir]), OutMsg ); 
 		    	
 		    	case 3:
 		    		printf ( "Seleccione el producto que desea remover entre 1..%d :\n", NUM_MACH );
@@ -188,6 +194,8 @@ static void *Environment ( void *arg )
 			        OutMsg.senal = RemoveProduct;
 			        OutMsg.valor = 0;
 			        
+			        //enviarMensaje ( &(queue [prodRemover]), OutMsg ); 
+			        
 			    case 4: 
 			    	printf ( "Devolviendo dinero acumulado... :\n" );
 			    	
@@ -197,6 +205,8 @@ static void *Environment ( void *arg )
 			        OutMsg.noProducto = 0;
 			        OutMsg.senal = withdrawal;
 			        OutMsg.valor = 0;
+			        
+			        //enviarMensaje ( &(queue [withdrawal]), OutMsg ); 
 			    	
 			    case 5:
 			    	break;
@@ -209,15 +219,14 @@ static void *Environment ( void *arg )
 	return ( NULL );
   }
   
-  
+ /*crm*/ 
 static void *CRM (  ){
-	
 	
 	ESTADOS_CRM       state,
                       state_next;
 	Smensaje          InMsg,
 	                  OutMsg;
-	pthread_t         maquinas[NUM_MACH+1];
+	pthread_t         maquinas[NUM_MACH+1];  /*plocals en el sdl lo volvi aca maquinas*/
 	
 	int               index;
 	
@@ -235,8 +244,71 @@ static void *CRM (  ){
 	state_next = IdleC;
 	
 	
+	//revisar esta monda
+	for ( ; ; ){
+		
+	    state = state_next;
+	    InMsg = recibirMensaje ( &(queue [CENTRAL_Q]) );
 	
+	    printf ( "\tpCentral received signal %d, value %d in state %d\n", InMsg.signal, InMsg.value, state );
+	    fflush ( stdout );
 	
+	    switch ( state )
+	    {
+	      case IdleC:
+	        switch ( InMsg.signal )
+	        {
+	          case sGetId:       /*sNumMach*/
+	            index = InMsg.value;
+	            if ( ( index >= 1 ) && ( index <= NUM_MACH ) )      	/*True*/
+	            {
+	              OutMsg.signal = (int) sId;
+	              OutMsg.value = index;                       // pLocals[index] 
+	              OutMsg.sender = 0;
+	            }
+	            else													/*False*/
+	            {
+	              OutMsg.signal = (int) sError;
+	              OutMsg.value = 0;
+	              OutMsg.sender = 0;
+	            }
+	            SenderQ = InMsg.sender;
+	            enviarMensaje ( &(queue [SenderQ]), OutMsg );   // send message to sender process 
+	            state_next = IdleC;
+	            break;
+	            
+	          /*case createProduct:
+	          	//saveData
+	          	//envia a response donde decide que responde
+	          	
+			  case updateProduct:
+			    //saveData
+	          	//envia a response donde decide que responde
+			  case requestInformation:                   //casos del SDL
+			  	//saveData
+	          	//envia a response donde decide que responde
+			  case activateMachine:  
+			  	//saveData
+	          	//envia a response donde decide que responde
+				  */
+	            
+	            
+	          default:
+	            break;
+	        }
+	        break;
+	      default:
+	        break;
+	    }
+	    printf ( "\tpCentral next state is %d\n", state_next );
+	    fflush ( stdout );
+	}
+
+  for ( index = 1; index <= NUM_MACH; index++ )
+    pthread_join ( maquinas[index], NULL );
+
+  return ( NULL );
+		
 }
   
   
