@@ -109,6 +109,11 @@ static void *Environment ( void *arg )
 			        sscanf ( line, "%d", &val);
 			        
 			        /*faltan señales y mensaje*/
+			        OutMsg.maquina = maq;
+			        OutMsg.noProducto =prod;
+			        OutMsg.senal = enterCoin;
+			        OutMsg.valor = val;
+			        
 			        
 			    case 2:
 			    	break;
@@ -148,6 +153,12 @@ static void *Environment ( void *arg )
 			        sscanf ( line, "%d", &prodAñadir );
 			        
 			        /*faltan señales y mensaje*/
+			        OutMsg.maquina = maq;
+			        OutMsg.noProducto =prodAñadir;
+			        OutMsg.senal = addProduct;
+			        OutMsg.valor = 0;
+			        
+			        
 			        
 			    case 2:
 			    	printf ( "Seleccione un producto a suplir entre 1..%d :\n", NUM_MACH );
@@ -157,6 +168,12 @@ static void *Environment ( void *arg )
 			        sscanf ( line, "%d", &prodSuplir );
 		    		
 		    		/*faltan señales y mensaje*/
+		    		
+		    		OutMsg.maquina = maq;
+			        OutMsg.noProducto = prodSuplir;
+			        OutMsg.senal = supplyProduct;
+			        OutMsg.valor = 0;
+		    	
 		    	
 		    	case 3:
 		    		printf ( "Seleccione el producto que desea remover entre 1..%d :\n", NUM_MACH );
@@ -166,11 +183,20 @@ static void *Environment ( void *arg )
 			        sscanf ( line, "%d", &prodRemover );
 			        
 			        /*faltan señales y mensaje*/
+			        OutMsg.maquina = maq;
+			        OutMsg.noProducto = prodRemover;
+			        OutMsg.senal = RemoveProduct;
+			        OutMsg.valor = 0;
 			        
 			    case 4: 
 			    	printf ( "Devolviendo dinero acumulado... :\n" );
 			    	
 			    	/*faltan señales y mensaje*/
+			    	
+			    	OutMsg.maquina = maq;
+			        OutMsg.noProducto = 0;
+			        OutMsg.senal = withdrawal;
+			        OutMsg.valor = 0;
 			    	
 			    case 5:
 			    	break;
@@ -187,7 +213,7 @@ static void *Environment ( void *arg )
 static void *CRM (  ){
 	
 	
-	CENTRAL_STATES    state,
+	ESTADOS_CRM       state,
                       state_next;
 	Smensaje          InMsg,
 	                  OutMsg;
