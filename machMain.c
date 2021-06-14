@@ -527,7 +527,8 @@ static void *Maquina(){		/*faltan args que recibe*/
 				}
 		    	else{
 		    		break;
-				}	
+				}
+				break;
     		default:
 				break;	
 		}
