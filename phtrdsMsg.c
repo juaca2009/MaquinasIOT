@@ -24,9 +24,9 @@ void iniciarColas(void){
         queque[i].bufin = 0;
         queque[i].bufout = 0;
         pthread_mutex_init(&(queque[i].buffer_lock), NULL);
-        sem_init(&(queque[i].items), CRM, 0);
-        sem_init(&(queque[i].items), CRM, 0);
-        sem_init(&(queque[i].slots), CRM, BUFSIZE);
+        sem_init(&(queque[i].items), CONF, 0);
+        sem_init(&(queque[i].items), CONF, 0);
+        sem_init(&(queque[i].slots), CONF, BUFSIZE);
     }    
 }
 

@@ -2,7 +2,7 @@
 #include <semaphore.h>
 #include "pMaquinasConf.h"
 
-#define CRM 0
+#define CONF 0
 
 typedef struct{
     Smensaje buffer[BUFSIZE];

@@ -3,12 +3,13 @@
 //Constantes/variables del sistema-------------------------------------------------------
 #define BUFSIZE 8
 #define NUM_COLAS 6
-#define CRM 0
-#define NUBE 1
-#define Maq1 2
-#define Maq2 3
-#define Maq3 4
-#define Maq4 5
+#define NUM_MACH 4
+#define Maq1 0
+#define Maq2 1
+#define Maq3 2
+#define Maq4 3
+#define CRM 4
+#define NUBE 5
 
 //Estructura de Mensaje--------------------------------------------------------
 typedef struct{
@@ -21,13 +22,12 @@ typedef struct{
 
 //Senales del Sistema----------------------------------------------------------
 typedef enum{
-    sNumMach,
     updateProduct,
     returnResponseNube,
     createProduct,
     deleteProduct,
     requestInformation,
-    activateMachine
+    RegistrarCompra
 } TO_CRM;
 
 
