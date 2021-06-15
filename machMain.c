@@ -9,10 +9,10 @@
 #define 	NUM_MACH 4
 
 
-static void *Maquina();		/*faltan args que recibe*/
-static void *CRM();			/*faltan args que recibe*/
-static void *Nube();		/*faltan args que recibe*/
-static void *Environment(); /*faltan args que recibe*/
+static void *Maquina(void *arg_ptr);		/*faltan args que recibe*/
+static void *CRM(void *arg_ptr);			/*faltan args que recibe*/
+static void *Nube(void *arg_ptr);			/*faltan args que recibe*/
+static void *Environment(void *arg); 	/*faltan args que recibe*/
 
 
 int main ( void )
@@ -43,7 +43,7 @@ int main ( void )
 
 
 /* Environment thread */
-static void *Environment (  )			/*faltan args que recibe*/
+static void *Environment (void *arg )			/*faltan args que recibe*/
 {
   char  line [100];
   int   val,		/*dinero*/
@@ -220,7 +220,7 @@ static void *Environment (  )			/*faltan args que recibe*/
   }
   
  /*crm*/ 
-static void *CRM (  ){			/*faltan args que recibe*/
+static void *CRM ( void *arg_ptr ){			/*faltan args que recibe*/
 	
 	ESTADOS_CRM       state,
                       state_next;
@@ -312,7 +312,7 @@ static void *CRM (  ){			/*faltan args que recibe*/
 }
 
 
-static void *Maquina(){		/*faltan args que recibe*/
+static void *Maquina( void *arg_ptr ){		/*faltan args que recibe*/
 	
 	ESTADOS_MAQUINA    state,
                   state_next;
@@ -536,13 +536,13 @@ static void *Maquina(){		/*faltan args que recibe*/
 	return ( NULL );	
 }
 
-static void *Nube(){   /*faltan args que recibe*/
+static void *Nube( void *arg_ptr ){   /*faltan args que recibe*/
 	ESTADOS_NUBE state,
                  state_next;
     Smensaje     InMsg,
                  OutMsg;
-    int             queueNo,
-                  *data_ptr;
+    int          queueNo,
+                 *data_ptr;
                  
     data_ptr = (int *) arg_ptr;
     queueNo = *data_ptr;
