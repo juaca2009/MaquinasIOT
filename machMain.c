@@ -9,24 +9,24 @@
 #define 	NUM_MACH 4
 
 
-static void *Maquina(void *arg_ptr);		/*faltan args que recibe*/
-static void *CRM(void *arg_ptr);			/*faltan args que recibe*/
-static void *Nube(void *arg_ptr);			/*faltan args que recibe*/
-static void *Environment(void *arg); 	/*faltan args que recibe*/
+static void *Maquina(void *arg_ptr);		
+static void *crm(void *arg_ptr);			
+static void *Nube(void *arg_ptr);			
+static void *Environment(void *arg); 	
 
 
 int main ( void )
 {
-  pthread_t   env_tid;                    /* Env tid */
-  pthread_t   CRM_tid;               /* CRM process tid */
-  pthread_t   Nube_tid;                    /* Nube tid */
+  pthread_t   env_tid;                    
+  pthread_t   CRM_tid;               
+  pthread_t   Nube_tid;                    
 
   /* Create queues */
   iniciarColas();
 
   /* Create threads */
-  pthread_create ( &env_tid, NULL, pEnvironment, NULL );
-  pthread_create ( &CRM_tid, NULL, CRM, NULL );
+  pthread_create ( &env_tid, NULL, Environment, NULL );
+  pthread_create ( &CRM_tid, NULL, crm, NULL );
   pthread_create ( &Nube_tid, NULL, Nube, NULL );
   
 
@@ -220,7 +220,7 @@ static void *Environment (void *arg )			/*faltan args que recibe*/
   }
   
  /*crm*/ 
-static void *CRM ( void *arg_ptr ){			/*faltan args que recibe*/
+static void crm(void *arg_ptr){			/*faltan args que recibe*/
 	
 	ESTADOS_CRM       state,
                       state_next;
