@@ -48,7 +48,7 @@ static void *Environment (void *arg ){
   		tipo,		/*cliente o admin*/
   		prod,		/*numero del producto*/
   		decision,
-		prodAñadir,
+		prodAï¿½adir,
 		prodSuplir,
 		prodRemover;
     Smensaje OutMsg;  
@@ -83,7 +83,7 @@ static void *Environment (void *arg ){
 		        break;
 
 	        case 1:
-			    printf ( "1. Añadir producto\n" );
+			    printf ( "1. Aï¿½adir producto\n" );
 			    printf ( "2. Suplir producto\n" );	
 			    printf ( "3. Remover producto\n" );	
 			    printf ( "4. Obtener dinero\n" );	
@@ -97,9 +97,9 @@ static void *Environment (void *arg ){
 			            fflush ( stdout );
 			            fflush ( stdin );
 			            fgets ( line, sizeof (line), stdin );
-			            sscanf ( line, "%d", &prodAñadir );
+			            sscanf ( line, "%d", &prodAï¿½adir );
 			            OutMsg.maquina = maq;
-			            OutMsg.noProducto =prodAñadir;
+			            OutMsg.noProducto =prodAï¿½adir;
 			            OutMsg.senal = (int)addProduct;
 			            OutMsg.valor = 0;
 			            enviarMensaje ( &(queque [maq]), OutMsg );
@@ -167,7 +167,7 @@ static void *Crm(void *arg_ptr){
 	for ( ; ; ){	
 	    state = state_next;
 	    InMsg = recibirMensaje ( &(queque [CRM]) );	
-	    printf ( "\tCRM recive señal %d, con estado %d\n", InMsg.senal, state);
+	    printf ( "\tCRM recive seï¿½al %d, con estado %d\n", InMsg.senal, state);
 	    fflush ( stdout );	
 	    switch (state){
             case IdleC:
@@ -228,6 +228,8 @@ static void *Crm(void *arg_ptr){
             default:
                 break;
         }
+		printf ( "\tel siguiente estado del CRM es: %d\n", state_next );
+		fflush ( stdout );
     }
     for ( index = 0; index < NUM_MACH; index++ ){             
         pthread_join ( maquinas[index], NULL );
@@ -242,8 +244,7 @@ static void *Maquina( void *arg_ptr ){		/*faltan args que recibe*/
 	
 	ESTADOS_MAQUINA    state,
                   state_next;
-    Smensaje          InMsg,
-                  OutMsg;
+    Smensaje InMsg, OutMsg;
 
     int             queueNo,
                   *data_ptr;
@@ -258,205 +259,85 @@ static void *Maquina( void *arg_ptr ){		/*faltan args que recibe*/
     data_ptr = (int *) arg_ptr;
     queueNo = whoami = *data_ptr;
 
-  	printf ( "\t\t\t\tsubscriber %d is free...\n", whoami );
+  	printf ( "\t\t\t\testa es la maquina %d...\n", whoami );
   	fflush ( stdout );
-
-  	state_next = IdleL;       /*idleL de la maquina que en el SDL es connected*/
-  	
+  	state_next = Connected;      
   	for ( ; ; ){
-  		
     	state = state_next;
-    	InMsg = receiveMessage ( &(queue [queueNo]) );
-    	
+    	InMsg = recibirMensaje ( &(queque [queueNo]) );
     	switch(state){
-    		case IdleL:
-    			switch ( InMsg.signal ){
-    				case configMach:
-    					calledNumber = InMsg.value;
-			            OutMsg.signal = (int) sGetId;			/*verificar esta monda*/ /*sGetId cambiar a sNumMach*/
-			            OutMsg.value = calledNumber;
-			            OutMsg.sender = whoami;
-			            sendMessage ( &(queue [CENTRAL_Q]), OutMsg ); /* send message to pCentral process */
-			            state_next = GettingId;
+    		case Connected:
+    			switch ( InMsg.senal ){
+    				case RemoveProduct:		
+			            OutMsg.valor = 0;
+			            OutMsg.maquina = whoami;
+						OutMsg.noProducto = InMsg.noProducto;
+						OutMsg.senal = (int)deleteProduct;	
+			            sendMessage ( &(queque [CRM]), OutMsg );
+			            state_next = Response;
 			            break;
 			        case addProduct:
-			        	calledNumber = InMsg.value;
-			            OutMsg.signal = (int) sGetId;			/*verificar esta monda*/ /*sGetId cambiar a sNumMach*/
-			            OutMsg.value = calledNumber;
-			            OutMsg.sender = whoami;	
-			            //enviarMensaje ( &(queue [createProduct]), OutMsg ); 
-			            //sendMessage ( &(queue [CENTRAL_Q]), OutMsg ); /* send message to pCentral process *///borrar
-			            state_next = response2;
+			        	OutMsg.valor = 0;
+			            OutMsg.maquina = whoami;
+						OutMsg.noProducto = InMsg.noProducto;
+						OutMsg.senal = (int)createProduct;	
+			            enviarMensaje ( &(queque [CRM]), OutMsg ); 
+			            state_next = Response;
 			            break;
 			            
 			        case supplyProduct:
-			        	calledNumber = InMsg.value;
-			            OutMsg.signal = (int) sGetId;			/*verificar esta monda*/ /*sGetId cambiar a sNumMach*/
-			            OutMsg.value = calledNumber;
-			            OutMsg.sender = whoami;	
-			            //enviarMensaje ( &(queue [updateProduct]), OutMsg ); 
-			            //sendMessage ( &(queue [CENTRAL_Q]), OutMsg ); /* send message to pCentral process *///borrar
-			            state_next = response2;
+			        	OutMsg.valor = 0;
+			            OutMsg.maquina = whoami;
+						OutMsg.noProducto = InMsg.noProducto;
+						OutMsg.senal = (int)updateProduct;
+			            enviarMensaje ( &(queque [CRM]), OutMsg ); 
+			            state_next = Response;
 			            break;
-			        
-			        case removeProduct:
-			        	calledNumber = InMsg.value;
-			            OutMsg.signal = (int) sGetId;			/*verificar esta monda*/ /*sGetId cambiar a sNumMach*/
-			            OutMsg.value = calledNumber;
-			            OutMsg.sender = whoami;	
-			            //enviarMensaje ( &(queue [updateProduct]), OutMsg ); 
-			            //sendMessage ( &(queue [CENTRAL_Q]), OutMsg ); /* send message to pCentral process *///borrar
-			            state_next = response2;
-			            break;
-			        
+			            
 			        case withdrawal:
-			        	calledNumber = InMsg.value;
-			            OutMsg.signal = (int) sGetId;			/*verificar esta monda*/ /*sGetId cambiar a sNumMach*/
-			            OutMsg.value = calledNumber;
-			            OutMsg.sender = whoami;	
-			            //enviarMensaje ( &(queue [updateProduct]), OutMsg );              		/*ACA SEGUN EL SDL NO MANDA NINGUNA SEÑAL*/
-			            //sendMessage ( &(queue [CENTRAL_Q]), OutMsg ); /* send message to pCentral process *///borrar
-			            state_next = response3;
+			            OutMsg.valor = 0;
+			            OutMsg.maquina = whoami;
+						OutMsg.noProducto = 0;
+						OutMsg.senal = (int)requestInformation;
+			            enviarMensaje ( &(queque [CRM]), OutMsg );              		
+			            state_next = Response2;
 			            break;
 			        
 			        case enterCoin:
-			        	payed = payed + 1;
-			        	state_next = IdleL;
-			        	break;
-			        	
-			        case selectSlot:
-			        	selected=selected+1;
-			        	
-			        	if(payed==1 && selected==1){            /*True*/
-			        		calledNumber = InMsg.value;
-			            	OutMsg.signal = (int) sGetId;			/*verificar esta monda*/ /*sGetId cambiar a sNumMach*/
-			            	OutMsg.value = calledNumber;
-			            	//enviarMensaje ( &(queue [updateProduct]), OutMsg ); 
-			            	//sendMessage ( &(queue [CENTRAL_Q]), OutMsg ); /* send message to pCentral process *///borrar
-			            	payed=0;
-			            	selected=0;
-			            	state_next = response;
-			            	break;
-						}
-						else{                                 /*False*/
-							state_next = IdleL;
-							break;
-						}
-					
-					case returnResponseCRM:
-						state_next = IdleL;
+			        	OutMsg.valor = InMsg.valor;
+			            OutMsg.maquina = whoami;
+						OutMsg.noProducto = InMsg.noProducto;
+						OutMsg.senal = (int)RegistrarCompra;
+			        	enviarMensaje ( &(queque [CRM]), OutMsg );
+						state_next = Response;  
 						break;
-						
-					case sId:
-						remotePId= InMsg.value;
-						state_next = IdleL;
-						break;
-			        	
 			        default:
-            			break;
-			        	
+            			break;  	
 				}
-				break;
-    		case GettingId:
-    			switch ( InMsg.signal ){
-    				
-		          	case sId:
-			            remotePId = InMsg.value;
-			            //OutMsg.signal = (int) sCnxReq;  /*cambiar sCnxReq por activateMachine*/
-			            OutMsg.signal = (int) sCnxReq;  /*cambiar sCnxReq por returnResponseCRM*/
-			            OutMsg.value = 0;
-			            OutMsg.sender = whoami;
-			            sendMessage ( &(queue [remotePId]), OutMsg ); /* send message to pLocal process */
-			            state_next = Connecting;
+    		    
+		    case Response:
+		    	switch ( InMsg.senal ){
+			        case returnResponseCrm:
+			            printf ( "\t\t\t\t%d confirmacion transaccion\n", InMsg.maquina );							
+			            fflush ( stdout );
+			            state_next = Connected;
+			            break; 
+			        default:
 			            break;
-			            
-			        case sError:
-			            state_next = IdleL;
-			            break;
-			            
+		        }   
+		    case Response2:	
+		    	switch ( InMsg.senal ){
+			        case returnResponseCrm:
+			        	printf ( "\t\t\t\t%d confirmacion transaccion\n", InMsg.maquina );							
+			            fflush ( stdout );
+						printf ( "\t\t\t\tdevolviendo monedas \n");							
+			            fflush ( stdout );
+			            state_next = Connected;
+			            break;        
 			        default:
 			            break;
 		        }
 		        break;
-		        
-		    case Connecting:
-
-		        switch ( InMsg.signal ){
-		        	
-		          	case activateMachine:
-			            printf ( "\t\t\t\tsCallConf: %d -> %d\n", whoami, InMsg.sender );			/*cambiar mensaje print*/
-			                                                          /* "send" message to environment */
-			            fflush ( stdout );
-			            state_next = IdleL;   /*connected = IdleL*/
-			            break;
-			        case returnResponseCRM:
-			            printf ( "\t\t\t\t%d sBusy\n", InMsg.sender );							/*cambiar mensaje print*/
-			                                                          /* "send" message to environment */
-			            fflush ( stdout );
-			            state_next = IdleL;
-			            break;
-			        default:
-			            break;
-		        }
-		        break;
-		        
-		    case response2:
-		    	
-		    	switch ( InMsg.signal ){
-		        	
-			        case returnResponseCRM:
-			            printf ( "\t\t\t\t%d sBusy\n", InMsg.sender );							/*cambiar mensaje print*/
-			                                                          /* "send" message to environment */
-			            fflush ( stdout );
-			            state_next = IdleL;
-			            break;
-			        
-					case sID:
-			            printf ( "\t\t\t\tsCallConf: %d -> %d\n", whoami, InMsg.sender );			/*cambiar mensaje print*/
-			                                                          /* "send" message to environment */
-			            fflush ( stdout );
-			            state_next = IdleL;   /*connected = IdleL*/
-			            break;    
-			        
-			        default:
-			            break;
-		        }
-		        break;
-		        
-		    case response3:
-		    	
-		    	switch ( InMsg.signal ){
-		        	
-			        case returnResponseCRM:
-			        	//OutMsg.signal = (int) returnMoney;  /*cambie sCnxReq por returnMoney*/
-			            state_next = IdleL;
-			            break;
-			        
-			        case sID:
-			        	
-			        	//OutMsg.signal = (int) requestInformation;  /*cambie sCnxReq por requestInformation*/
-			        	//OutMsg.signal = (int) returnMoney;  /*cambie sCnxReq por returnMoney*/
-			        	state_next = IdleL;
-			            break;
-			            
-			        default:
-			            break;
-		        }
-		        break;
-		    case response:
-		    	
-		    	if (InMsg.signal==returnResponseCRM){
-		    		//OutMsg.signal = (int) deliverProduct;  /*cambie sCnxReq por deliverProduct*/
-			        //OutMsg.signal = (int) returnCoin;  /*cambie sCnxReq por returnCoin*/
-			        state_next = IdleL;
-			        break;
-				}
-		    	else{
-		    		break;
-				}
-				break;
-    		default:
-				break;	
 		}
 	}	
 	return ( NULL );	

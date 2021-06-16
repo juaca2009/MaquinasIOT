@@ -40,11 +40,9 @@ typedef enum{
     RemoveProduct,
     returnResponseCrm,
     enterCoin,
-    selectSlot,
     addProduct,
     supplyProduct,
-    withdrawal,
-    configMach
+    withdrawal
 } TO_MAQUINA;
 
 
@@ -57,8 +55,6 @@ typedef enum{
 
 typedef enum{
     Connected,
-    Connecting,
-    GettingId,
     Response,
     Response2,
     Response3
