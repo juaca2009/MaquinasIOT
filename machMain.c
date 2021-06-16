@@ -152,22 +152,21 @@ static void *Crm(void *arg_ptr){
 	Smensaje          InMsg,
 	                  OutMsg;
 	pthread_t         maquinas[NUM_MACH]; 
-	int               index;	
-	int               SenderQ;
+	int               index;
 	
 	for ( index = 0; index < NUM_MACH; index++ ){	
 	    pthread_create ( &maquinas[index], NULL, Maquina, (void *) &index );
 	    sleep ( 1 );
 	}
 	
-	printf ( "\t\t\t\tsReady\n" ); 
+	printf ( "\t\t\t\t\t\tCRM listo\n" ); 
 	fflush ( stdout );
 
     state_next = IdleC;		
 	for ( ; ; ){	
 	    state = state_next;
 	    InMsg = recibirMensaje ( &(queque [CRM]) );	
-	    printf ( "\tCRM recive senal %d, con estado %d\n", InMsg.senal, state);
+	    printf ( "\t\t\t\t\t\tCRM recive senal %d, de la maquina %d con estado %d\n", InMsg.senal, InMsg.maquina, state);
 	    fflush ( stdout );	
 	    switch (state){
             case IdleC:
@@ -221,14 +220,14 @@ static void *Crm(void *arg_ptr){
                         OutMsg.noProducto = 0;
                         OutMsg.valor = 0;
                         OutMsg.senal = (int)returnResponseCrm; 
-	                    enviarMensaje ( &(queque [NUBE]), OutMsg );   // send message to sender process 
+	                    enviarMensaje ( &(queque [InMsg.maquina]), OutMsg );   // send message to sender process 
                         state_next = IdleC;
                         break;
                 }
             default:
                 break;
         }
-		printf ( "\tel siguiente estado del CRM es: %d\n", state_next );
+		printf ( "\t\t\t\t\t\tel siguiente estado del CRM es: %d\n", state_next );
 		fflush ( stdout );
     }
     for ( index = 0; index < NUM_MACH; index++ ){             
@@ -254,12 +253,14 @@ static void *Maquina( void *arg_ptr ){		/*faltan args que recibe*/
     data_ptr = (int *) arg_ptr;
     queueNo = whoami = *data_ptr;
 
-  	printf ( "\t\t\t\testa es la maquina %d...\n", whoami );
+  	printf ( "\tla maquina %d ya se encuentra lista\n", whoami );
   	fflush ( stdout );
   	state_next = Connected;      
   	for ( ; ; ){
     	state = state_next;
-    	InMsg = recibirMensaje ( &(queque [queueNo]) );
+    	InMsg = recibirMensaje ( &(queque [queueNo]) ); 
+	    printf ( "\tMaquina recive senal %d \n", InMsg.senal);
+        fflush(stdout);
     	switch(state){
     		case Connected:
     			switch ( InMsg.senal ){
@@ -313,7 +314,7 @@ static void *Maquina( void *arg_ptr ){		/*faltan args que recibe*/
 		    case Response:
 		    	switch ( InMsg.senal ){
 			        case returnResponseCrm:
-			            printf ( "\t\t\t\t%d confirmacion transaccion\n", InMsg.maquina );							
+			            printf ( "\tmaquina %d envia senal al ambiente: confirmacion transaccion\n", InMsg.maquina );							
 			            fflush ( stdout );
 			            state_next = Connected;
 			            break; 
@@ -323,9 +324,9 @@ static void *Maquina( void *arg_ptr ){		/*faltan args que recibe*/
 		    case Response2:	
 		    	switch ( InMsg.senal ){
 			        case returnResponseCrm:
-			        	printf ( "\t\t\t\t%d confirmacion transaccion\n", InMsg.maquina );							
+			        	printf ( "\tmaquina %d envia senal al ambiente: confirmacion transaccion\n", InMsg.maquina );							
 			            fflush ( stdout );
-						printf ( "\t\t\t\tdevolviendo monedas \n");							
+						printf ( "\tdevolviendo monedas y entregando compra \n");							
 			            fflush ( stdout );
 			            state_next = Connected;
 			            break;        
@@ -334,6 +335,8 @@ static void *Maquina( void *arg_ptr ){		/*faltan args que recibe*/
 		        }
 		        break;
 		}
+		printf ( "\tel siguiente estado de la maquina es: %d\n", state_next );
+		fflush ( stdout );
 	}	
 	return ( NULL );	
 }
@@ -345,9 +348,14 @@ static void *Nube( void *arg_ptr ){
                  OutMsg;
     
     state_next = IdleN; 
+    printf("\t\t\t\t\t\t\t\tNube lista \n");
+    fflush(stdout);
   	for ( ; ; ){
     	state = state_next;
     	InMsg = recibirMensaje ( &(queque [NUBE]) );
+	    printf ( "\t\t\t\t\t\t\t\tnube recive senal %d \n", InMsg.senal);
+        fflush(stdout);
+
     	switch(state){
 			case IdleN:
     			switch ( InMsg.senal ){
@@ -364,8 +372,7 @@ static void *Nube( void *arg_ptr ){
 				}
 		    default:
 		    	break;
-    	}
-    
+    	} 
 	}
 	return ( NULL );
 }
