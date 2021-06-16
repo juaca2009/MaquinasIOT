@@ -48,7 +48,7 @@ static void *Environment (void *arg ){
   		tipo,		/*cliente o admin*/
   		prod,		/*numero del producto*/
   		decision,
-		prodA�adir,
+		prodAnadir,
 		prodSuplir,
 		prodRemover;
     Smensaje OutMsg;  
@@ -83,7 +83,7 @@ static void *Environment (void *arg ){
 		        break;
 
 	        case 1:
-			    printf ( "1. A�adir producto\n" );
+			    printf ( "1. Anadir producto\n" );
 			    printf ( "2. Suplir producto\n" );	
 			    printf ( "3. Remover producto\n" );	
 			    printf ( "4. Obtener dinero\n" );	
@@ -97,9 +97,9 @@ static void *Environment (void *arg ){
 			            fflush ( stdout );
 			            fflush ( stdin );
 			            fgets ( line, sizeof (line), stdin );
-			            sscanf ( line, "%d", &prodA�adir );
+			            sscanf ( line, "%d", &prodAnadir );
 			            OutMsg.maquina = maq;
-			            OutMsg.noProducto =prodA�adir;
+			            OutMsg.noProducto =prodAnadir;
 			            OutMsg.senal = (int)addProduct;
 			            OutMsg.valor = 0;
 			            enviarMensaje ( &(queque [maq]), OutMsg );
@@ -167,7 +167,7 @@ static void *Crm(void *arg_ptr){
 	for ( ; ; ){	
 	    state = state_next;
 	    InMsg = recibirMensaje ( &(queque [CRM]) );	
-	    printf ( "\tCRM recive se�al %d, con estado %d\n", InMsg.senal, state);
+	    printf ( "\tCRM recive senal %d, con estado %d\n", InMsg.senal, state);
 	    fflush ( stdout );	
 	    switch (state){
             case IdleC:
@@ -268,7 +268,7 @@ static void *Maquina( void *arg_ptr ){		/*faltan args que recibe*/
 			            OutMsg.maquina = whoami;
 						OutMsg.noProducto = InMsg.noProducto;
 						OutMsg.senal = (int)deleteProduct;	
-			            sendMessage ( &(queque [CRM]), OutMsg );
+			            enviarMensaje ( &(queque [CRM]), OutMsg );
 			            state_next = Response;
 			            break;
 			        case addProduct:
