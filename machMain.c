@@ -249,12 +249,7 @@ static void *Maquina( void *arg_ptr ){		/*faltan args que recibe*/
     int             queueNo,
                   *data_ptr;
 
-    int             calledNumber,   
-                  remotePId,
-                  whoami,
-                  senderQ,
-				  payed,		/*para saber si ya pago*/
-				  selected;		/*para saber si selecciono*/
+    int  whoami;
 
     data_ptr = (int *) arg_ptr;
     queueNo = whoami = *data_ptr;
@@ -343,45 +338,34 @@ static void *Maquina( void *arg_ptr ){		/*faltan args que recibe*/
 	return ( NULL );	
 }
 
-static void *Nube( void *arg_ptr ){   /*faltan args que recibe*/
+static void *Nube( void *arg_ptr ){   
 	ESTADOS_NUBE state,
                  state_next;
     Smensaje     InMsg,
                  OutMsg;
-    int          queueNo,
-                 *data_ptr;
-                 
-    data_ptr = (int *) arg_ptr;
-    queueNo = *data_ptr;
     
-    state_next = IdleN;       /*idleL de la nube que en el SDL es Idle*/
-  	
+    state_next = IdleN; 
   	for ( ; ; ){
-  		
     	state = state_next;
-    	InMsg = receiveMessage ( &(queue [queueNo]) );
-    	
+    	InMsg = recibirMensaje ( &(queque [NUBE]) );
     	switch(state){
-    		switch ( InMsg.signal ){
-	    		case IdleN:
+			case IdleN:
+    			switch ( InMsg.senal ){
 		    		case saveData:
-		    			//OutMsg.signal = (int) returnResponseNube;  /*cambie sCnxReq por returnResponseNube*/
-		    			//puede ir un print aca
+		    			OutMsg.maquina = InMsg.maquina;
+                        OutMsg.noProducto = 0;
+                        OutMsg.valor = 0;
+						OutMsg.senal = returnResponseCrm;
+						enviarMensaje ( &(queque [CRM]), OutMsg );
 		    			state_next = IdleN;
 		    			break;
-		    		
-		    		case requestData:
-		    			//OutMsg.signal = (int) returnData;  /*cambie sCnxReq por returnData*/
-		    			//puede ir un print aca
-		    			state_next = IdleN;
-		    			break;
-		    		
 		    		default:
 		    			break;
-		    	default:
-		    		break;
-    		}
+				}
+		    default:
+		    	break;
     	}
+    
 	}
 	return ( NULL );
 }
