@@ -56,8 +56,7 @@ typedef enum{
 typedef enum{
     Connected,
     Response,
-    Response2,
-    Response3
+    Response2
 } ESTADOS_MAQUINA;
 
 typedef enum{
